@@ -1,19 +1,44 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component } from 'react';
 
-const Timer: React.FC = () => {
-  const [currentTime, setCurrentTime] = useState(new Date());
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface TimerProps {}
 
-  useEffect(() => {
-    const timerID = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
+interface TimerState {
+  currentTime: Date;
+}
 
-    return () => {
-      clearInterval(timerID);
+class Timer extends Component<TimerProps, TimerState> {
+  timerID: NodeJS.Timeout | null = null;
+
+  constructor(props: TimerProps) {
+    super(props);
+    this.state = {
+      currentTime: new Date()
     };
-  }, []);
+  }
 
-  return <>{currentTime.toLocaleTimeString()}</>;
-};
+  componentDidMount(): void {
+    this.timerID = setInterval(() => {
+      this.setCurrentTime();
+    }, 1000);
+  }
+
+  componentWillUnmount(): void {
+    if (this.timerID !== null) {
+      clearInterval(this.timerID);
+    }
+  }
+
+  setCurrentTime(): void {
+    this.setState({
+      currentTime: new Date()
+    });
+  }
+
+  render(): JSX.Element {
+    const { currentTime } = this.state;
+    return <>{currentTime.toLocaleTimeString()}</>;
+  }
+}
 
 export default Timer;
